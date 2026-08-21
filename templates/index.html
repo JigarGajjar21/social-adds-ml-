@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social Network Ads Prediction</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+
+<body>
+
+  <div class="card">
+    <h1>&#128226; Social Network Ad Prediction</h1>
+    <p class="subtitle">Find out if a user is likely to purchase based on their profile.</p>
+
+    <form action="/predict" method="post" id="predictForm">
+
+      <div class="form-group">
+        <label for="gender">Gender</label>
+        <select id="gender" name="gender" required>
+          <option value="1">Male</option>
+          <option value="0">Female</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="age">Age</label>
+        <input
+          type="number"
+          id="age"
+          name="age"
+          placeholder="e.g. 30"
+          min="1"
+          max="100"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="salary">Estimated Salary ($)</label>
+        <input
+          type="number"
+          id="salary"
+          name="salary"
+          placeholder="e.g. 50000"
+          min="0"
+          required
+        />
+      </div>
+
+      <button type="submit" id="submitBtn">Predict</button>
+
+    </form>
+
+    {% if error_text %}
+      <div class="result error">
+        &#9888;&#65039; {{ error_text }}
+      </div>
+    {% endif %}
+
+    {% if result %}
+      <div class="result {{ 'success' if result.purchased == 1 else 'failure' }}">
+        <div class="result-label">
+          {% if result.purchased == 1 %}
+            &#9989; Will Purchase
+          {% else %}
+            &#10060; Will Not Purchase
+          {% endif %}
+        </div>
+        <div class="confidence-bar-wrap">
+          <div class="confidence-bar" style="width: {{ result.confidence_pct }}"></div>
+        </div>
+        <div class="confidence-text">
+          Confidence: <strong>{{ result.confidence_pct }}</strong>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+  <script>
+    document.getElementById('predictForm').addEventListener('submit', function() {
+      var btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Predicting...';
+    });
+  </script>
+
+</body>
+</html>
