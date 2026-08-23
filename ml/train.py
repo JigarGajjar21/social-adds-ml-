@@ -14,14 +14,12 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import (
-    accuracy_score, classification_report, confusion_matrix
-)
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 # ─────────────────────────────────────────────
-# Logging setup
+# Logging
 # ─────────────────────────────────────────────
 logging.basicConfig(
     level=logging.INFO,
@@ -50,10 +48,8 @@ def load_data(path: str) -> pd.DataFrame:
 
 
 def preprocess(df: pd.DataFrame):
-    """Encode and split data. Returns X_train, X_test, y_train, y_test, scaler."""
     le = LabelEncoder()
     df["Gender"] = le.fit_transform(df["Gender"])
-
     logger.info("Gender encoding: %s",
                 dict(zip(le.classes_, le.transform(le.classes_))))
 
@@ -63,7 +59,7 @@ def preprocess(df: pd.DataFrame):
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
-    logger.info("Train size: %d | Test size: %d", len(X_train), len(X_test))
+    logger.info("Train: %d | Test: %d", len(X_train), len(X_test))
 
     scaler  = StandardScaler()
     X_train = scaler.fit_transform(X_train)
@@ -87,15 +83,13 @@ def train(X_train, y_train) -> RandomForestClassifier:
 
 
 def evaluate(model, X_train, X_test, y_train, y_test):
-    """Evaluate model and return test accuracy."""
-    y_pred  = model.predict(X_test)
-    acc     = accuracy_score(y_test, y_pred)
+    y_pred = model.predict(X_test)
+    acc    = accuracy_score(y_test, y_pred)
 
     logger.info("Test Accuracy : %.4f", acc)
     logger.info("Confusion Matrix:\n%s", confusion_matrix(y_test, y_pred))
     logger.info("Classification Report:\n%s", classification_report(y_test, y_pred))
 
-    # 5-fold cross-validation on full dataset
     X_full = np.vstack([X_train, X_test])
     y_full = np.concatenate([y_train, y_test])
     cv = cross_val_score(model, X_full, y_full, cv=5, scoring="accuracy")
@@ -105,9 +99,7 @@ def evaluate(model, X_train, X_test, y_train, y_test):
 
 
 def save_artifact(model, scaler, accuracy: float, output_path: str):
-    """Save model + scaler + metadata as a versioned artifact."""
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
     artifact = {
         "model":      model,
         "scaler":     scaler,
@@ -116,7 +108,6 @@ def save_artifact(model, scaler, accuracy: float, output_path: str):
         "accuracy":   accuracy,
         "features":   ["Gender", "Age", "EstimatedSalary"],
     }
-
     joblib.dump(artifact, output_path)
     logger.info("Artifact saved to %s (version %s)", output_path, MODEL_VERSION)
 
@@ -127,7 +118,7 @@ def main():
     model                                 = train(X_train, y_train)
     accuracy                              = evaluate(model, X_train, X_test, y_train, y_test)
     save_artifact(model, sc, accuracy, OUTPUT_PATH)
-    logger.info("Done. Model version %s | Accuracy: %.4f", MODEL_VERSION, accuracy)
+    logger.info("Done. Model v%s | Accuracy: %.4f", MODEL_VERSION, accuracy)
 
 
 if __name__ == "__main__":
