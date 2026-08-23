@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: social-ads-predictor
+    runtime: python
+    buildCommand: pip install -r requirements.txt && python ml/train.py
+    startCommand: gunicorn run:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: MODEL_PATH
+        value: ml/artifacts/model.pkl
