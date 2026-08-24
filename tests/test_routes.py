@@ -1,7 +1,7 @@
 """Integration tests for Flask routes."""
 import pytest
-from app import create_app
-from app.predictor import load_model
+from src import create_app
+from src.predictor import load_model
 from config import TestingConfig
 
 
@@ -30,7 +30,6 @@ class TestFormPredict:
     def test_valid_form_predict(self, client):
         r = client.post("/predict", data={"gender": "1", "age": "30", "salary": "50000"})
         assert r.status_code == 200
-        # Should show confidence text
         assert b"Confidence" in r.data
 
     def test_invalid_age_shows_error(self, client):
@@ -47,10 +46,7 @@ class TestFormPredict:
 class TestAPIPredict:
 
     def test_api_valid_request(self, client):
-        r = client.post(
-            "/api/predict",
-            json={"gender": 1, "age": 30, "salary": 50000},
-        )
+        r = client.post("/api/predict", json={"gender": 1, "age": 30, "salary": 50000})
         assert r.status_code == 200
         data = r.get_json()
         assert data["success"] is True
@@ -59,10 +55,7 @@ class TestAPIPredict:
         assert "probabilities" in data
 
     def test_api_invalid_age(self, client):
-        r = client.post(
-            "/api/predict",
-            json={"gender": 1, "age": 0, "salary": 50000},
-        )
+        r = client.post("/api/predict", json={"gender": 1, "age": 0, "salary": 50000})
         assert r.status_code == 422
         data = r.get_json()
         assert data["success"] is False
@@ -79,10 +72,7 @@ class TestAPIPredict:
         assert r.status_code == 400
 
     def test_api_prediction_values(self, client):
-        r = client.post(
-            "/api/predict",
-            json={"gender": 1, "age": 30, "salary": 50000},
-        )
+        r = client.post("/api/predict", json={"gender": 1, "age": 30, "salary": 50000})
         data = r.get_json()
         assert data["purchased"] in (0, 1)
         assert 0.0 <= data["confidence"] <= 1.0

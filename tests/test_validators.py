@@ -1,6 +1,6 @@
 """Unit tests for input validation."""
 import pytest
-from app.validators import validate_prediction_input
+from src.validators import validate_prediction_input
 
 
 class TestValidateInput:

@@ -1,8 +1,8 @@
 import logging
 from flask import Blueprint, render_template, request, jsonify
-from app import limiter
-from app.predictor import predict, get_model_info
-from app.validators import validate_prediction_input
+from src import limiter
+from src.predictor import predict, get_model_info
+from src.validators import validate_prediction_input
 
 logger    = logging.getLogger(__name__)
 main_bp   = Blueprint("main", __name__)

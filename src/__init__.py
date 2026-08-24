@@ -31,7 +31,7 @@ def create_app(config_class=None):
     limiter.init_app(app)
 
     # Register blueprints
-    from app.routes import main_bp
+    from src.routes import main_bp
     app.register_blueprint(main_bp)
 
     app.logger.info("App started in %s mode", cfg.__name__)
