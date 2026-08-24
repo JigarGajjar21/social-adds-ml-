@@ -6,7 +6,7 @@ load_dotenv()  # reads .env file automatically
 class Config:
     """Base configuration shared by all environments."""
     SECRET_KEY        = os.environ.get("SECRET_KEY", "dev-secret-change-in-prod")
-    MODEL_PATH        = os.environ.get("MODEL_PATH", os.path.join("ml", "artifacts", "model.pkl"))
+    MODEL_PATH        = os.environ.get("MODEL_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "ml", "artifacts", "model.pkl"))
     RATELIMIT_DEFAULT = "100 per hour"
     RATELIMIT_STORAGE_URI = "memory://"
 
@@ -17,7 +17,7 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     DEBUG   = False
     TESTING = True
-    MODEL_PATH = os.path.join("ml", "artifacts", "model.pkl")
+    MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ml", "artifacts", "model.pkl")
 
 class ProductionConfig(Config):
     DEBUG   = False
