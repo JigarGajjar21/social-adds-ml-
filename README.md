@@ -14,8 +14,11 @@ and a full REST API.
 
 ## Live Demo
 
-> Clone the repo, run two commands, open your browser.
+**[https://social-ads-predictor.onrender.com](https://social-ads-predictor.onrender.com)**
 
+> Note: Free tier spins down after 15 min of inactivity. First load may take ~30 seconds.
+
+Or run locally:
 ```bash
 pip install -r requirements.txt
 python run.py
